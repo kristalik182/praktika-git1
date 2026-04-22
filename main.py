@@ -1,0 +1,44 @@
+from storage import load_habits, save_habits
+from datetime import datetime
+def show_menu():
+    print("   ТРЕКЕР ПРИВЫЧЕК")
+    print("1. Добавить привычку")
+    print("2. Список привычек")
+    print("3. Отметить выполнение")
+    print("4. Статистика")
+    print("5. Выход")
+def add_habit():
+    print("\n--- ДОБАВЛЕНИЕ НОВОЙ ПРИВЫЧКИ ---")
+    name = input("Название привычки: ").strip()
+    if not name:
+        print("Название привычки не может быть пустым!")
+        return
+    description = input("Описание (необязательно): ").strip()
+    habits = load_habits()
+    for habit in habits:
+        if habit['name'].lower() == name.lower():
+            print(f"Привычка '{name}' уже существует!")
+            return
+    new_habit = {
+        'id': len(habits) + 1,
+        'name': name,
+        'description': description if description else "",
+        'completed_days': [],
+        'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    habits.append(new_habit)
+    save_habits(habits)
+    print(f"Привычка '{name}' успешно добавлена!")
+def main():
+    while True:
+        show_menu()
+        choice = input("Выберите пункт (1-5): ")
+        if choice == "1":
+            add_habit()
+        elif choice == "5":
+            print("До свидания!")
+            break
+        else:
+            print(f"\n[Функция {choice} - будет добавлена позже]")
+if __name__ == "__main__":
+    main()
