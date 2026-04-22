@@ -77,7 +77,7 @@ def complete_habit():
     except ValueError:
         print("Пожалуйста, введите число!")
 def show_stats():
-    print("   СТАТИСТИКА")
+    print("\n   СТАТИСТИКА")
     habits = load_habits()
     if not habits:
         print("Нет привычек. Добавьте несколько, чтобы увидеть статистику!")
@@ -85,22 +85,22 @@ def show_stats():
     total_habits = len(habits)
     total_completions = sum(len(h['completed_days']) for h in habits)
     avg_completions = total_completions / total_habits if total_habits > 0 else 0
-    print(f"\n📊 ОБЩАЯ СТАТИСТИКА:")
+    print(f"\n ОБЩАЯ СТАТИСТИКА:")
     print(f"   Всего привычек: {total_habits}")
     print(f"   Всего выполнений: {total_completions}")
     print(f"   Среднее выполнений на привычку: {avg_completions:.1f}")
     if total_completions > 0:
         best_habit = max(habits, key=lambda x: len(x['completed_days']))
-        print(f"\nСАМАЯ ВЫПОЛНЯЕМАЯ ПРИВЫЧКА:")
+        print(f"\n САМАЯ ВЫПОЛНЯЕМАЯ ПРИВЫЧКА:")
         print(f"   {best_habit['name']} - {len(best_habit['completed_days'])} выполнений")
-    print(f"\nПОСЛЕДНИЕ 7 ДНЕЙ:")
+    print(f"\n ПОСЛЕДНИЕ 7 ДНЕЙ:")
     today = datetime.now()
     for i in range(7):
         date = (today - timedelta(days=i)).strftime("%Y-%m-%d")
         completions_on_date = sum(1 for h in habits if date in h['completed_days'])
         bar = "█" * completions_on_date if completions_on_date > 0 else "░"
         print(f"   {date}: {bar} ({completions_on_date} привычек)")
-    print(f"\nРЕКОМЕНДАЦИИ:")
+    print(f"\n РЕКОМЕНДАЦИИ:")
     inactive_habits = [h for h in habits if len(h['completed_days']) == 0]
     if inactive_habits:
         print(f"Начните выполнять: {', '.join(h['name'] for h in inactive_habits)}")
