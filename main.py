@@ -1,5 +1,5 @@
 from storage import load_habits, save_habits
-from datetime import datetime
+from datetime import datetime, timedelta
 def show_menu():
     print("   ТРЕКЕР ПРИВЫЧЕК")
     print("1. Добавить привычку")
@@ -73,25 +73,43 @@ def complete_habit():
         selected_habit['completed_days'].append(today)
         save_habits(habits)
         print(f"Отлично! '{selected_habit['name']}' выполнена сегодня!")
-        print(f"   Всего выполнений: {len(selected_habit['completed_days'])}")
+        print(f"Всего выполнений: {len(selected_habit['completed_days'])}")
     except ValueError:
         print("Пожалуйста, введите число!")
 def show_stats():
-    print("\n--- СТАТИСТИКА ---")
+    print("\n   СТАТИСТИКА")
     habits = load_habits()
     if not habits:
-        print("Нет привычек. Добавьте первую через пункт 1!")
+        print("Нет привычек. Добавьте несколько, чтобы увидеть статистику!")
         return
     total_habits = len(habits)
     total_completions = sum(len(h['completed_days']) for h in habits)
-    print(f"\nВсего привычек: {total_habits}")
-    print(f"Всего выполнений: {total_completions}")
-    if total_habits > 0:
-        avg = total_completions / total_habits
-        print(f"Среднее выполнений: {avg:.1f}")
+    avg_completions = total_completions / total_habits if total_habits > 0 else 0
+    print(f"\n ОБЩАЯ СТАТИСТИКА:")
+    print(f"   Всего привычек: {total_habits}")
+    print(f"   Всего выполнений: {total_completions}")
+    print(f"   Среднее выполнений на привычку: {avg_completions:.1f}")
     if total_completions > 0:
-        best = max(habits, key=lambda x: len(x['completed_days']))
-        print(f"\nЛучшая привычка: {best['name']} - {len(best['completed_days'])} выполнений")
+        best_habit = max(habits, key=lambda x: len(x['completed_days']))
+        print(f"\n САМАЯ ВЫПОЛНЯЕМАЯ ПРИВЫЧКА:")
+        print(f"   {best_habit['name']} - {len(best_habit['completed_days'])} выполнений")
+    print(f"\n ПОСЛЕДНИЕ 7 ДНЕЙ:")
+    today = datetime.now()
+    for i in range(7):
+        date = (today - timedelta(days=i)).strftime("%Y-%m-%d")
+        completions_on_date = sum(1 for h in habits if date in h['completed_days'])
+        bar = "█" * completions_on_date if completions_on_date > 0 else "░"
+        print(f"   {date}: {bar} ({completions_on_date} привычек)")
+    print(f"\n РЕКОМЕНДАЦИИ:")
+    inactive_habits = [h for h in habits if len(h['completed_days']) == 0]
+    if inactive_habits:
+        print(f"Начните выполнять: {', '.join(h['name'] for h in inactive_habits)}")
+    today_str = today.strftime("%Y-%m-%d")
+    completed_today = [h for h in habits if today_str in h['completed_days']]
+    if completed_today:
+        print(f"Отличная работа сегодня! Вы выполнили {len(completed_today)} привычек")
+    else:
+        print(f"Сегодня вы ещё не выполнили ни одной привычки. Начните прямо сейчас!")
 def main():
     while True:
         show_menu()
